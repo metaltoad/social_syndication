@@ -3,6 +3,7 @@
  * @file
  * A module that allows automatic creation of posts for Twitter, Facebook,
  * and Google+ after content is created on your site.
+ * Each network is controlled by a submodule.
  */
 
  /*
