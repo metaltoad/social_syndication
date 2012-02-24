@@ -1,0 +1,12 @@
+name = Social Syndication
+description = Automatically send your content to Twitter, Facebook and Google+
+core = 7.x
+
+;stylesheets[all][] = style.css
+;scripts[] = somescript.js
+;files[] = file
+
+dependencies[] = oauth_common
+
+configure = admin/settings/socialsyndication
+

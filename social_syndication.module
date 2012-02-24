@@ -1,0 +1,81 @@
+<?php
+/*
+ * @file
+ * A module that allows automatic creation of posts for Twitter, Facebook,
+ * and Google+ after content is created on your site.
+ */
+
+ /*
+ * Implements hook_help().
+ */
+function social_syndication_help($path, $arg) {
+  $help = '';
+  switch ($path) {
+    case 'node/add/page':
+      return t('Use the Social Syndication tab below to automatically post this content to your social networks.');
+      break;
+    default:
+      return $help;
+      break;
+  }
+}
+
+/*
+ * Implements hook_form_alter().
+ *
+ * Add custom tab for setting up social posts
+ */
+function social_syndication_form_alter(&$form, $form_state, $form_id) {
+  // Only include on node add/edit forms
+  // TODO create settings page and check for content type
+  if (!empty($form['#node_edit_form'])) {
+
+    $form['social_syndication'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Social Syndication'),
+      '#collapsable' => TRUE,
+      '#collapsed' => FALSE,
+      '#group' => 'additional_settings',
+      '#attached' => array(
+        'js' => array(
+          'vertical-tabs' => drupal_get_path('module', 'social_syndication') . '/js/social_syndication.js',
+        ),
+      ),
+      '#tree' => TRUE,
+      '#weight' => 10,
+    );
+
+    // This checkbox is used to show or hide the custom settings form using
+    // javascript (altering states of a container defined later).
+    $form['social_syndication']['enabled'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Post to Twitter'),
+      '#default_value' => FALSE, // TODO create settings and get value from settings.
+    );
+
+    // This container will be used to store the whole form for our custom
+    // settings. This way, showing/hidding the form using javascript is easier,
+    // as only one element should be set visible.
+    $form['social_syndication']['social_syndication_container'] = array(
+      '#type' => 'container',
+      '#parents' => array('social_syndication'),
+      '#states' => array(
+        'invisible' => array(
+          // If the checkbox is not enabled, show the container.
+          'input[name="social_syndication[enabled]"]' => array('checked' => FALSE),
+        ),
+      ),
+    );
+
+    // The string of this textfield will be shown
+    // as summary in the vertical tab.
+    $form['social_syndication']['social_syndication_container']['twitter_setting'] = array(
+      '#type' => 'textarea',
+      '#title' => t('Here is the text of your tweet'),
+      '#resizable' => TRUE,
+      '#rows' => 5,
+      '#cols' => 40,
+      '#default_value' => t('Tweet Tweet!'), //TODO construct tweet
+    );
+  }
+}
