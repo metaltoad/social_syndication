@@ -22,6 +22,13 @@ function social_syndication_help($path, $arg) {
 }
 
 /*
+ * Implements hook_menu().
+ */
+function social_syndication_menu() {
+
+}
+
+/*
  * Implements hook_form_alter().
  *
  * Add custom tab for setting up social posts
@@ -30,7 +37,6 @@ function social_syndication_form_alter(&$form, $form_state, $form_id) {
   // Only include on node add/edit forms
   // TODO create settings page and check for content type
   if (!empty($form['#node_edit_form'])) {
-
     $form['social_syndication'] = array(
       '#type' => 'fieldset',
       '#title' => t('Social Syndication'),
@@ -48,12 +54,13 @@ function social_syndication_form_alter(&$form, $form_state, $form_id) {
 
     // This checkbox is used to show or hide the custom settings form using
     // javascript (altering states of a container defined later).
-    $form['social_syndication']['enabled'] = array(
+    // TODO Check if twitter_syndication is enabled
+    $form['social_syndication']['tweet_post'] = array(
       '#type' => 'checkbox',
       '#title' => t('Post to Twitter'),
       '#default_value' => FALSE, // TODO create settings and get value from settings.
     );
-
+    dpm($form, 'form');
     // This container will be used to store the whole form for our custom
     // settings. This way, showing/hidding the form using javascript is easier,
     // as only one element should be set visible.
@@ -63,16 +70,16 @@ function social_syndication_form_alter(&$form, $form_state, $form_id) {
       '#states' => array(
         'invisible' => array(
           // If the checkbox is not enabled, show the container.
-          'input[name="social_syndication[enabled]"]' => array('checked' => FALSE),
+          'input[name="social_syndication[tweet_post]"]' => array('checked' => FALSE),
         ),
       ),
     );
 
     // The string of this textfield will be shown
     // as summary in the vertical tab.
-    $form['social_syndication']['social_syndication_container']['twitter_setting'] = array(
+    $form['social_syndication']['social_syndication_container']['twitter_m'] = array(
       '#type' => 'textarea',
-      '#title' => t('Here is the text of your tweet'),
+      '#title' => t('Here is the format of your tweet'),
       '#resizable' => TRUE,
       '#rows' => 5,
       '#cols' => 40,

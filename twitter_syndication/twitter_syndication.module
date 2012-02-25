@@ -3,3 +3,24 @@
  * @file
  * Automatically post your content to Twitter
  */
+
+ /*
+ * Implements hook_node_presave().
+ */
+function twitter_syndication_node_presave($node) {
+  dpm($node);
+}
+
+function twitter_syndication_help($path, $arg) {
+  $node = node_load($arg[1]);
+  dpm($node);
+}
+
+/*
+ * Implements hook_form_alter().
+ *
+ * Add settings for posting to Twitter
+ */
+function twitter_syndication_form_alter(&$form, $form_state, $form_id) {
+
+}
