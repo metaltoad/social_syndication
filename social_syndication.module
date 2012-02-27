@@ -74,16 +74,5 @@ function social_syndication_form_alter(&$form, $form_state, $form_id) {
         ),
       ),
     );
-
-    // The string of this textfield will be shown
-    // as summary in the vertical tab.
-    $form['social_syndication']['social_syndication_container']['twitter_message'] = array(
-      '#type' => 'textarea',
-      '#title' => t('Here is the format of your tweet'),
-      '#resizable' => TRUE,
-      '#rows' => 5,
-      '#cols' => 40,
-      '#default_value' => t('Tweet Tweet!'), //TODO construct tweet
-    );
   }
 }

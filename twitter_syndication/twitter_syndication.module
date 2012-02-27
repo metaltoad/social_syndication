@@ -26,6 +26,17 @@ function twitter_syndication_form_alter(&$form, $form_state, $form_id) {
   // TODO create settings page and check for content type
   if (!empty($form['#node_edit_form'])) {
 
+    // The string of this textfield will be shown
+    // as summary in the vertical tab.
+    $form['social_syndication']['social_syndication_container']['twitter_message'] = array(
+      '#type' => 'textarea',
+      '#title' => t('Here is the format of your tweet'),
+      '#resizable' => TRUE,
+      '#rows' => 5,
+      '#cols' => 40,
+      '#default_value' => t('[node:title]: [node:url] ([node:author:twitter_username]) #[term:name]'), //TODO construct tweet
+    );
+
     // Just to prove I can put more form elements from a different module
     $form['social_syndication']['test_checkbox'] = array(
       '#type' => 'checkbox',
