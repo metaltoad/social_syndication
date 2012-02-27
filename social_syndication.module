@@ -60,7 +60,7 @@ function social_syndication_form_alter(&$form, $form_state, $form_id) {
       '#title' => t('Post to Twitter'),
       '#default_value' => FALSE, // TODO create settings and get value from settings.
     );
-    dpm($form, 'form');
+
     // This container will be used to store the whole form for our custom
     // settings. This way, showing/hidding the form using javascript is easier,
     // as only one element should be set visible.
@@ -77,7 +77,7 @@ function social_syndication_form_alter(&$form, $form_state, $form_id) {
 
     // The string of this textfield will be shown
     // as summary in the vertical tab.
-    $form['social_syndication']['social_syndication_container']['twitter_m'] = array(
+    $form['social_syndication']['social_syndication_container']['twitter_message'] = array(
       '#type' => 'textarea',
       '#title' => t('Here is the format of your tweet'),
       '#resizable' => TRUE,
