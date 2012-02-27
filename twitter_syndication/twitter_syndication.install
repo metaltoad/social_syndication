@@ -1,0 +1,60 @@
+<?php
+/**
+ * @file
+ * Install, update, and uninstall functions for the twitter_syndication module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function twitter_syndication_install() {
+  // Check to see if twitter username field exists.
+  $field = field_info_field('twitter_username');
+
+  // If the field does not exist then create it
+  if ( empty($field) ) {
+    $field = array(
+      'field_name' => 'twitter_username',
+      'type' => 'text',
+      'entity_types' => array('user'),
+      'translatable' => TRUE,
+    );
+    $field = field_create_field($field);
+  }
+}
+
+/*
+ * Enable Twitter syndication module
+ */
+function twitter_syndication_enable() {
+  if (!field_info_instance('user', 'twitter_username', 'user')) {
+    $instance = array(
+      'field_name' => 'twitter_username',
+      'entity_type' => 'user',
+      'bundle' => 'user',
+      'label' => t('Twitter Username'),
+      'description' => t('Enter Twitter username for posting content'),
+      'required' => FALSE,
+    );
+
+    $instance = field_create_instance($instance);
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function twitter_syndication_uninstall() {
+  watchdog('Twitter Syndication Module', 'Uninstalling module and deleting fields.');
+  $instance = field_info_instance('user', 'twitter_username', 'user');
+
+  if ($instance) {
+    field_delete_instance($instance);
+  }
+
+  $field = field_info_field('twitter_username');
+
+  if ($field) {
+    field_delete_field('twitter_username');
+  }
+}

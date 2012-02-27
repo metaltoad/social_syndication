@@ -38,11 +38,13 @@ function twitter_syndication_form_alter(&$form, $form_state, $form_id) {
 
     // Scan through the list of entities for supported token entities.
     foreach ($entities as $entity => $info) {
+      dpm($entity, 'Entity');
+      dpm($info, 'Info');
       $object_callback = "_token_example_get_{$entity}";
       if (function_exists($object_callback) && $objects = $object_callback()) {
         $form[$entity] = array(
           '#type' => 'select',
-          '#title' => $info['label'],
+          '#title' => check_plain($info['label']),
           '#options' => array(0 => t('Not selected')) + $objects,
           '#default_value' => isset($form_state['storage'][$entity]) ? $form_state['storage'][$entity] : 0,
           '#access' => !empty($objects),
@@ -88,8 +90,22 @@ function twitter_syndication_form_alter(&$form, $form_state, $form_id) {
       );
     }
 
-
     dpm($form, 'form');
     dpm($form_state, 'form state');
   }
+}
+
+/*
+ * Implements hook_field_info().
+ *
+ * @return A new field on the user entity to capture Twitter user name
+ */
+function twitter_syndication_field_info() {
+  return array(
+    'field_twitter_syndication_twitter_handle' => array(
+      'label' => t('Twitter User Name'),
+      'description' => t('Enter your twitter handle'),
+      'default_formatter' => 'text',
+    ),
+  );
 }
