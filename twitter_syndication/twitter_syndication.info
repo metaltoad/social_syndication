@@ -2,6 +2,9 @@ name = Twitter Syndication
 description = Automatically send your content to Twitter when it is posted.
 core = 7.x
 package = Social Syndication
+configure = admin/config/media/socialmedia
+
+files[] = twitter_syndication.admin.inc
 
 ;stylesheets[all][] = style.css
 ;scripts[] = somescript.js
