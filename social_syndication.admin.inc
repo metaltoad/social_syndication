@@ -26,6 +26,31 @@ function social_syndication_admin_profile_form($form, &$form_state) {
     '#type' => 'submit',
     '#value' => t('Save'),
   );
-
   return $form;
 }
+
+/**
+ * Builds and returns the Twitter oauth form.
+ */
+function twitter_admin_profile_form($form, &$form_state) {
+  $form['twitter_profile'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Authorize a Twitter account'),
+    '#collapsible' => FALSE,
+  );
+
+  $form['twitter_profile']['twitter'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Twitter username'),
+    '#default_value' => '', //TODO make this a variable after checking if set
+    '#size' => 40,
+    '#maxlength' =>  100,
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Authorize'),
+  );
+  return $form;
+}
+

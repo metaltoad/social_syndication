@@ -27,7 +27,7 @@ function social_syndication_help($path, $arg) {
 function social_syndication_menu() {
   // Module settings.
   $items['admin/config/services/social_syndication'] = array(
-    'title' => 'Social Syndication',
+    'title' => 'Social Syndication Overview',
     'description' => 'Configure settings for posting to social networks',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('social_syndication_admin_profile_form'),
@@ -35,6 +35,22 @@ function social_syndication_menu() {
     'file path' => drupal_get_path('module', 'social_syndication'),
     'access callback' => TRUE, //TODO create permissions
     'type' => MENU_NORMAL_ITEM,
+  );
+  $items['admin/config/services/social_syndication/social'] = array(
+    'title' => 'Overview',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+  );
+  $items['admin/config/services/social_syndication/twitter'] = array(
+    'title' => 'Enable Twitter Posting',
+    'description' => 'Authorize a Twitter account',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('twitter_admin_profile_form'),
+    'file' => 'social_syndication.admin.inc',
+    'file path' => drupal_get_path('module', 'social_syndication'),
+    'access callback' => TRUE, //TODO create permissions
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 10,
   );
   return $items;
 }

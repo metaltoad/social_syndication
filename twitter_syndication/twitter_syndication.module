@@ -16,7 +16,7 @@ function twitter_syndication_node_presave($node) {
  */
 function twitter_syndication_help($path, $arg) {
   $node = node_load($arg[1]);
-  dpm($node);
+  dpm($node, 'Node');
 }
 
 /*
@@ -122,33 +122,4 @@ function twitter_syndication_field_info() {
       'default_formatter' => 'text',
     ),
   );
-}
-
-/*
- * Implements oauth for Twitter
- */
-function twitter_syndication_oauth_info() {
-  $info = array(
-    'twitter_syndication' => array(
-      'label' => t('Twitter Syndication'),
-      'token table' => 'twitter_syndication_token',
-      'consumer' => array(
-        'key' => variable_get('twitter_syndication_consumer_key'),
-        'secret' => variable_get('twitter_syndication_consumer_secret'),
-        'signature_method' => OAUTH_SIG_METHOD_HMACSHA1,
-        'auth_type' => OAUTH_TYPE_AUTHORIZATION,
-        'version' => '1.0',
-        'class' => 'OAuthPECLConsumer',
-      ),
-      'file' => array(
-        'type' => 'module',
-        'name' => 'twitter_syndication',
-      ),
-      'mapping' => array(
-        'authname' => 'user_id',
-        'username' => 'screen_name',
-      ),
-    ),
-  );
-  return $info;
 }
