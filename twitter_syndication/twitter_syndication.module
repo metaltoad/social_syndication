@@ -123,3 +123,59 @@ function twitter_syndication_field_info() {
     ),
   );
 }
+
+function twitter_syndication_menu() {
+  $items['twitter_syndication/request'] = array(
+    'page callback' => '_twitter_syndication_test_request',
+    'access arguments' => array('access content'),
+  );
+  $items['twitter_syndication/access'] = array(
+    'page callback' => '_twitter_syndication_test_access',
+    'access arguments' => array('access content'),
+  );
+  return $items;
+}
+
+function _twitter_syndication_test_request() {
+  $consumer = DrupalOAuthConsumer::load('Tp2ne3J67mIatPw4gVTRg', FALSE);
+  if (!$consumer) {
+    $consumer = new DrupalOAuthConsumer('Tp2ne3J67mIatPw4gVTRg', 'RmZ1y64J2dhysssO7PCeebDpaLQGuZfmv90kbwZzY');
+    $consumer->write();
+  }
+  $sig_method = DrupalOAuthClient::signatureMethod();
+  $client = new DrupalOAuthClient($consumer, NULL, $sig_method);
+
+  $request_token = $client->getRequestToken('http://sandbox.unicorn.mtmdevel.com/oauth/request_token', array(
+    'callback' => 'http://sandbox.unicorn.mtmdevel.com/twitter_syndication/access',
+  ));
+
+  $request_token->write();
+
+  $_SESSION['twitter_syndication_request_key'] = $request_token->key;
+
+  $auth_url = $client->getAuthorizationUrl('http://sandbox.unicorn.mtmdevel.com/oauth/authorize', array(
+    'callback' => 'http://sandbox.unicorn.mtmdevel.com/twitter_syndication/access',
+  ));
+
+  drupal_goto($auth_url);
+}
+
+function _twitter_syndication_test_access() {
+  $consumer = DrupalOAuthConsumer::load('bVAU7jXKSL7vgnyayuiLZiGXZfoevZ8R', FALSE);
+  $request_token = DrupalOAuthToken::loadByKey($_GET['oauth_token'], $consumer, OAUTH_COMMON_TOKEN_TYPE_REQUEST);
+
+  $client = new DrupalOAuthClient($consumer, $request_token);
+  $verifier = isset($_GET['oauth_verifier']) ? $_GET['oauth_verifier'] : NULL;
+  $access_token = $client->getAccessToken('http://sandbox.unicorn.mtmdevel.com/oauth/access_token', array('verifier' => $verifier));
+  $request_token->delete();
+
+  $sig_method = DrupalOAuthClient::signatureMethod();
+  $auth = new HttpClientOAuth($consumer, $access_token, $sig_method, TRUE, TRUE);
+  $formatter = new HttpClientBaseFormatter(HttpClientBaseFormatter::FORMAT_JSON);
+  $client = new HttpClient($auth, $formatter);
+
+  $result = $client->post('http://sandbox.unicorn.mtmdevel.com/oauthlogin/api/user/info');
+  print '<pre>';
+  var_dump($result);
+  print '</pre>'; die;
+}

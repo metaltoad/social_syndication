@@ -30,16 +30,18 @@ function social_syndication_admin_profile_form($form, &$form_state) {
 }
 
 /**
- * Builds and returns the Twitter oauth form.
+ * Menu callback - admin form of Oauth Twitter settings.
  */
 function twitter_admin_profile_form($form, &$form_state) {
-  $form['twitter_profile'] = array(
+  $form['setup'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Authorize a Twitter account'),
-    '#collapsible' => FALSE,
+    '#title' => t('Setup a Twitter account'),
+    '#description' => t('Submitting this form will redirect you to Twitter where you can login with the account that you would like to use to promote your content'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
   );
 
-  $form['twitter_profile']['twitter'] = array(
+  $form['setup']['twitter'] = array(
     '#type' => 'textfield',
     '#title' => t('Twitter username'),
     '#default_value' => '', //TODO make this a variable after checking if set
@@ -52,5 +54,12 @@ function twitter_admin_profile_form($form, &$form_state) {
     '#value' => t('Authorize'),
   );
   return $form;
+}
+
+/*
+ * Submit handler. Steps through the OAuth process.
+ */
+function twitter_admin_profile_form_submit($form, &$form_state) {
+  
 }
 
