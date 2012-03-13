@@ -30,7 +30,7 @@ function social_syndication_admin_profile_form($form, &$form_state) {
 }
 
 /**
- * Menu callback - admin form of Oauth Twitter settings.
+ * Menu callback - admin form for Oauth Twitter settings.
  */
 function twitter_admin_profile_form($form, &$form_state) {
   $form['setup'] = array(
@@ -40,15 +40,6 @@ function twitter_admin_profile_form($form, &$form_state) {
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
   );
-
-  $form['setup']['twitter'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Twitter username'),
-    '#default_value' => '', //TODO make this a variable after checking if set
-    '#size' => 40,
-    '#maxlength' =>  100,
-  );
-
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Authorize'),
@@ -57,9 +48,50 @@ function twitter_admin_profile_form($form, &$form_state) {
 }
 
 /*
- * Submit handler. Steps through the OAuth process.
+ * Submit handler. Steps through the OAuth process for Twitter.
  */
 function twitter_admin_profile_form_submit($form, &$form_state) {
-  
+  $url = 'https://api.twitter.com/oauth/request_token';
+  $params = array(
+    'oauth_callback' => url('admin/services/social_syndication/twitter', array('absolute' => TRUE)),
+  );
+  $consumer = new OAuthConsumer('Tp2ne3J67mIatPw4gVTRg', 'RmZ1y64J2dhysssO7PCeebDpaLQGuZfmv90kbwZzY',$params['oauth_callback']);
+  $token = new OAuthToken(NULL, NULL);
+  $request = OAuthRequest::from_consumer_and_token($consumer, $token, 'POST', $url, $params);
+  $request->sign_request(new OAuthSignatureMethod_HMAC_SHA1(), $consumer, $token);
+  $params = $request->get_parameters();
+  unset($params['oauth_request_token']);
+  $response = drupal_http_request($request->get_normalized_http_url(), array(), 'POST', $request->get_parameters());
+  dpm($response);
+  //dpm($_SERVER, 'Server');
+  dpm(array($request->get_normalized_http_url(), $request->get_parameters()));
+}
+
+/**
+ * Menu callback - admin form for Oauth Bitly settings.
+ */
+function bitly_admin_profile_form($form, &$form_state) {
+  $form['setup'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Connect to Bitly'),
+    '#description' => t('If you would like to use your Bitly account to shorten URLs for Twitter, enter your username and API key here.'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+  );
+
+  $form['setup']['ss_bitly_login'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Bit.ly username'),
+    '#default_value' => variable_get('ss_bitly_login', ''),
+    '#size' => 40,
+    '#maxlength' =>  100,
+  );
+  $form['setup']['ss_bitly_key'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Bit.ly API Key'),
+    '#description' => t('To find your API key, login to your bit.ly account and go to the settings page.'),
+    '#default_value' => variable_get('ss_bitly_key', ''),
+  );
+  return system_settings_form($form);
 }
 
