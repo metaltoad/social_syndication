@@ -14,19 +14,27 @@ function social_syndication_admin_profile_form($form, &$form_state) {
     '#collapsible' => FALSE,
   );
 
-  $form['site_profiles']['twitter'] = array(
+  $form['site_profiles']['ss_twitter'] = array(
     '#type' => 'textfield',
     '#title' => t('Twitter username'),
-    '#default_value' => 'metaltoadtest', //TODO make this a variable after checking if set
+    '#default_value' => variable_get('ss_twitter', ''), //TODO make this a variable after checking if set
     '#size' => 40,
     '#maxlength' =>  16,
+  );
+  $form['site_profiles']['ss_twitter_hashtags'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Automatically #Hashtag these words in a post title'),
+    '#description' => t('If there are words you would like to be converted to hashtags when they appear in a post title, list them here as comma separated values'),
+    '#default_value' => variable_get('ss_twitter_hashtags', ''),
+    '#size' => 80,
+    '#maxlength' => 100,
   );
 
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Save'),
   );
-  return $form;
+  return system_settings_form($form);
 }
 
 /**
@@ -44,7 +52,7 @@ function twitter_admin_profile_form($form, &$form_state) {
     '#type' => 'submit',
     '#value' => t('Authorize'),
   );
-  return $form;
+  return system_settings_form($form);
 }
 
 /*
@@ -55,7 +63,7 @@ function twitter_admin_profile_form_submit($form, &$form_state) {
   $params = array(
     'oauth_callback' => url('admin/services/social_syndication/twitter', array('absolute' => TRUE)),
   );
-  $consumer = new OAuthConsumer('Tp2ne3J67mIatPw4gVTRg', 'RmZ1y64J2dhysssO7PCeebDpaLQGuZfmv90kbwZzY',$params['oauth_callback']);
+  $consumer = new OAuthConsumer('Tp2ne3J67mIatPw4gVTRg', 'RmZ1y64J2dhysssO7PCeebDpaLQGuZfmv90kbwZzY', $params['oauth_callback']);
   $token = new OAuthToken(NULL, NULL);
   $request = OAuthRequest::from_consumer_and_token($consumer, $token, 'POST', $url, $params);
   $request->sign_request(new OAuthSignatureMethod_HMAC_SHA1(), $consumer, $token);

@@ -8,26 +8,34 @@
  * Implements hook_node_presave().
  */
 function twitter_syndication_node_presave($node) {
-  if ($node->social_syndication['twitter_message']) {
-    $pretweet = $node->social_syndication['twitter_message'];
+  if ($node->social_syndication['tweet_post']) {
+    if ($node->social_syndication['twitter_message']) {
+      $pretweet = $node->social_syndication['twitter_message'];
+    }
+    if ($pretweet) {
+      $data = array(
+        'node' => $node,
+      );
+      $test = token_replace($pretweet, $data, array('callback' => 'twitter_syndication_shorten_url'));
+    }
+    $prehashtags = field_get_items('node', $node, 'field_tags');
+    $hashtags = array();
+      if ($prehashtags) {
+        foreach ($prehashtags as $hashtag) {
+        $hashtags[] = '#' . $hashtag['name'];
+      }
+    }
+    $tweet = $test;
+    if (!empty($hashtags)) {
+       $tweet .= ' ' . $hashtags[0] . ' ' . $hashtags[1];
+     }
+     $_SESSION['tweet'] = $tweet;
+    $tweet_length = strlen($tweet);
+    if ($tweet_length > 140) {
+      form_set_error('twitter_message', t('Your tweet is a bit too long. Try murdering the grammar and resubmitting.'));
+    }
+    dpm($tweet, 'Tweet');
   }
-  if ($pretweet) {
-    $data = array(
-      'node' => $node,
-    );
-    $test = token_replace($pretweet, $data, array('callback' => 'twitter_syndication_shorten_url'));
-  }
-  $prehashtags = field_get_items('node', $node, 'field_tags');
-  $hashtags = array();
-  foreach ($prehashtags as $array) {
-    $hashtags[] = '#' . $array['name'];
-  }
-  $tweet = $test . ' ' . $hashtags[0] . ' ' . $hashtags[1];
-  $tweet_length = strlen($tweet);
-  if ($tweet_length > 50) {
-    form_set_error('twitter_message', t('Your tweet is a bit too long. Try murdering the grammar and resubmitting.'));
-  }
-  dpm($tweet, 'Tweet');
 }
 
 /*
@@ -38,20 +46,21 @@ function twitter_syndication_shorten_url(&$replacements, $data, $options) {
     $url_to_shorten = $replacements['[node:url]'] . '/'; //Bitly needs a trailing slash on all urls
   }
   $long_url = urlencode($url_to_shorten);
-  $base_url = 'http://api.bitly.com/v3/shorten?';
+  $base_url = 'https://api-ssl.bitly.com/v3/shorten?';
   $login = variable_get('ss_bitly_login', '');
   $apikey = variable_get('ss_bitly_key', '');
   $format = 'json';
-
-  //build the string
-  if ($login && $apikey) {
-    $dest = $base_url.'login='.$login.'&apiKey='.$apikey.'&longUrl='.$long_url.'&format='.$format;
-    $result = drupal_http_request($dest);
-    $contents = json_decode($result->data);
-    $short_url = $contents->data->url;
-    $replacements['[node:url]'] = $short_url;
-  }
-  dpm($short_url, 'Short URL');
+    //build the string
+    if ($login && $apikey) {
+      $dest = $base_url . 'login=' . $login . '&apiKey=' . $apikey . '&longUrl=' . $long_url . '&format=' . $format;
+      $result = drupal_http_request($dest);
+      $contents = json_decode($result->data);
+      if ($contents->status_code == 200) {
+        $short_url = $contents->data->url;
+        $replacements['[node:url]'] = $short_url;
+      }
+    }
+  dpm($contents, 'From Bitly');
   return $replacements;
 }
 /*
@@ -80,7 +89,7 @@ function twitter_syndication_form_alter(&$form, $form_state, $form_id) {
       '#resizable' => TRUE,
       '#rows' => 5,
       '#cols' => 40,
-      '#default_value' => t('[node:title]: [node:url] (@[node:author:twitter_username])'), //TODO get taxonomy
+      '#default_value' => t('New post: [node:title] [node:url] (@[node:author:twitter_username])'), 
     );
 
     // Just to prove I can put more form elements from a different module
@@ -144,7 +153,6 @@ function twitter_syndication_form_alter(&$form, $form_state, $form_id) {
         '#markup' => '<p>' . t('Enable the <a href="@drupal-token">Token module</a> to view the available token browser.', array('@drupal-token' => 'http://drupal.org/project/token')) . '</p>',
       );
     }
-
     //dpm($form, 'form');
     //dpm($form_state, 'form state');
     //dpm($form_state['input']['social_syndication']['twitter_message'], 'Pretweet');
@@ -166,26 +174,4 @@ function twitter_syndication_field_info() {
       'default_formatter' => 'text',
     ),
   );
-}
-
-/*
- * Shorten Urls
- * @param $url the url to shorten
- *
- * return the shortned url
- */
-function shorten_bitly_url($url) {
-  $long_url = urlencode('http://kronda.com/middle-eastern-carrot-salad/');
-  $base_url = 'http://api.bitly.com/v3/shorten?';
-  $login = 'ephany';
-  $apikey = 'R_3d9c8616179ce1bc8512a5bcadcc6a1f';
-  $format = 'json';
-
-  //build the string
-  $dest = $base_url.'login='.$login.'&apiKey='.$apikey.'&longUrl='.$long_url.'&format='.$format;
-  $result = drupal_http_request($dest);
-  $contents = json_decode($result->data);
-  $short_url = $contents->data->url;
-  dpm($short_url);
-
 }

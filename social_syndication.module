@@ -62,7 +62,7 @@ function social_syndication_menu() {
     'access callback' => TRUE, //TODO create permissions
     'type' => MENU_LOCAL_TASK,
     'weight' => 15,
-  );
+    );
   return $items;
 }
 
