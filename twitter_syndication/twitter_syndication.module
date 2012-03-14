@@ -15,7 +15,6 @@ function twitter_syndication_node_presave($node) {
     $data = array(
       'node' => $node,
     );
-    $url = 'http://www.google.com';
     $test = token_replace($pretweet, $data, array('callback' => 'twitter_syndication_shorten_url'));
   }
   $prehashtags = field_get_items('node', $node, 'field_tags');
@@ -25,11 +24,13 @@ function twitter_syndication_node_presave($node) {
   }
   $tweet = $test . ' ' . $hashtags[0] . ' ' . $hashtags[1];
   $tweet_length = strlen($tweet);
+  if ($tweet_length > 50) {
+    form_set_error('twitter_message', t('Your tweet is a bit too long. Try murdering the grammar and resubmitting.'));
+  }
   dpm($tweet, 'Tweet');
 }
 
 /*
- * Implements hook_tokens().
  * Shorten the long url and return it to the tweet.
  */
 function twitter_syndication_shorten_url(&$replacements, $data, $options) {
