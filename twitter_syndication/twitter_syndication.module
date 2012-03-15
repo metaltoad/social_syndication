@@ -42,6 +42,7 @@ function twitter_syndication_node_presave($node) {
  * Shorten the long url and return it to the tweet.
  */
 function twitter_syndication_shorten_url(&$replacements, $data, $options) {
+  //First, let's shorten the url
   if ($replacements['[node:url]']) {
     $url_to_shorten = $replacements['[node:url]'] . '/'; //Bitly needs a trailing slash on all urls
   }
@@ -60,7 +61,24 @@ function twitter_syndication_shorten_url(&$replacements, $data, $options) {
         $replacements['[node:url]'] = $short_url;
       }
     }
-  dpm($contents, 'From Bitly');
+  //Let's see if the title has any words that should be changed to hashtags
+  if ($replacements['[node:title]']) {
+    $prehashtitle = $replacements['[node:title]'];
+  }
+  $prehashtitlearray = explode(' ', $prehashtitle);
+  $wordstohash = explode(', ', variable_get('ss_twitter_hashtags'));
+  $titlewithhashes = array();
+    foreach($prehashtitlearray as $word) {
+      if (in_array(trim($word), $wordstohash) ) {
+        $word = '#' . $word;
+      }
+      $titlewithhashes[] = $word;
+    }
+
+  //dpm($contents, 'From Bitly');
+  dpm($prehashtitle, 'Prehashtitle');
+  dpm($wordstohash, 'Hash List');
+  dpm($titlewithhashes, 'Title with hashes');
   return $replacements;
 }
 /*
