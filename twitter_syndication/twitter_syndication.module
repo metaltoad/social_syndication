@@ -67,14 +67,15 @@ function twitter_syndication_shorten_url(&$replacements, $data, $options) {
   }
   $prehashtitlearray = explode(' ', $prehashtitle);
   $wordstohash = explode(', ', variable_get('ss_twitter_hashtags'));
-  $titlewithhashes = array();
+  $titlewithhashesarray = array();
     foreach($prehashtitlearray as $word) {
-      if (in_array(trim($word), $wordstohash) ) {
+      if ( in_array(strtolower(trim($word)), array_map('strtolower', $wordstohash)) ); {
         $word = '#' . $word;
       }
-      $titlewithhashes[] = $word;
+      $titlewithhashesarray[] = $word;
     }
-
+  $titlewithhashes = implode(' ', $titlewithhashesarray);
+  $replacements['[node:title]'] = $titlewithhashes;
   //dpm($contents, 'From Bitly');
   dpm($prehashtitle, 'Prehashtitle');
   dpm($wordstohash, 'Hash List');
