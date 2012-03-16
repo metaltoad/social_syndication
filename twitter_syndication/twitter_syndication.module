@@ -4,6 +4,17 @@
  * Automatically post your content to Twitter
  */
 
+/**
+ * Implements hook_permission().
+ */
+function twitter_syndication_permission() {
+  return array(
+    'send content to twitter' => array(
+    'title' => t('Send Content to Twitter'),
+    ),
+  );
+}
+
  /*
  * Implements hook_node_presave().
  */
@@ -97,8 +108,12 @@ function twitter_syndication_help($path, $arg) {
  */
 function twitter_syndication_form_alter(&$form, $form_state, $form_id) {
   // Only include on node add/edit forms
-  // TODO create settings page and check for content type
   if (!empty($form['#node_edit_form'])) {
+    $nodetype = $form['#node']->type;
+    $nodestotweet = variable_get('ss_node_types');
+    dpm($form, 'Form');
+    dpm($nodetype, 'Nodetype of form');
+    dpm($nodestotweet, 'Array of content types from settings');
 
     // The string of this textfield will be shown
     // as summary in the vertical tab.
@@ -108,7 +123,7 @@ function twitter_syndication_form_alter(&$form, $form_state, $form_id) {
       '#resizable' => TRUE,
       '#rows' => 5,
       '#cols' => 40,
-      '#default_value' => t('New post: [node:title] [node:url] (@[node:author:twitter_username])'), 
+      '#default_value' => t('New post: [node:title] [node:url] (@[node:author:twitter_username])'),
     );
 
     // Just to prove I can put more form elements from a different module
@@ -172,13 +187,8 @@ function twitter_syndication_form_alter(&$form, $form_state, $form_id) {
         '#markup' => '<p>' . t('Enable the <a href="@drupal-token">Token module</a> to view the available token browser.', array('@drupal-token' => 'http://drupal.org/project/token')) . '</p>',
       );
     }
-    //dpm($form, 'form');
-    //dpm($form_state, 'form state');
-    //dpm($form_state['input']['social_syndication']['twitter_message'], 'Pretweet');
-    //dpm(variable_get('ss_bitly_login'), 'Bitly login');
-    //dpm(variable_get('ss_bitly_key'), 'Bitly key');
-  }
-}
+  } //endif
+} //endfunction
 
 /*
  * Implements hook_field_info().

@@ -29,12 +29,12 @@ function social_syndication_admin_profile_form($form, &$form_state) {
     '#size' => 80,
     '#maxlength' => 100,
   );
-  $form['site_profiles']['ss_post_types'] = array(
+  $form['site_profiles']['ss_node_types'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Node types'),
     '#description' => t('Choose which post types you would like to enable social posting'),
     '#options' => node_type_get_names(),
-    '#default_value' => variable_get('ss_post_types', array('story' => 'story', 'blog' => 'blog')),
+    '#default_value' => variable_get('ss_node_types', array('story' => 'story', 'blog' => 'blog')),
   );
 
   $form['submit'] = array(

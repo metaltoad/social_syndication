@@ -66,16 +66,28 @@ function social_syndication_menu() {
   return $items;
 }
 
+/**
+ * Implements hook_permission().
+ */
+function social_syndication_permission() {
+  return array(
+    'post content to social media' => array(
+    'title' => t('Post Content to Social Media'),
+    ),
+  );
+}
+
 /*
  * Implements hook_form_alter().
  *
  * Add custom tab for setting up social posts
  */
 function social_syndication_form_alter(&$form, $form_state, $form_id) {
-  // Only include on node add/edit forms
-  // TODO create settings page and check for content type
-  if (!empty($form['#node_edit_form'])) {
-    $form['social_syndication'] = array(
+  if (!empty($form['#node_edit_form']) && user_access('post content to social media')) {
+    $nodetype = $form['#node']->type;
+    $nodestopost = variable_get('ss_node_types');
+    if ($nodestopost[$nodetype] === $nodetype) {
+      $form['social_syndication'] = array(
       '#type' => 'fieldset',
       '#title' => t('Social Syndication'),
       '#collapsable' => TRUE,
@@ -87,30 +99,31 @@ function social_syndication_form_alter(&$form, $form_state, $form_id) {
         ),
       ),
       '#tree' => TRUE,
-      '#weight' => 10,
-    );
+      '#weight' => -20,
+      );
 
-    // This checkbox is used to show or hide the custom settings form using
-    // javascript (altering states of a container defined later).
-    // TODO Check if twitter_syndication is enabled
-    $form['social_syndication']['tweet_post'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Post to Twitter'),
-      '#default_value' => FALSE, // TODO create settings and get value from settings.
-    );
+      // This checkbox is used to show or hide the custom settings form using
+      // javascript (altering states of a container defined later).
+      // TODO Check if twitter_syndication is enabled
+      $form['social_syndication']['tweet_post'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Post to Twitter'),
+        '#default_value' => FALSE, // TODO create settings and get value from settings.
+      );
 
-    // This container will be used to store the whole form for our custom
-    // settings. This way, showing/hidding the form using javascript is easier,
-    // as only one element should be set visible.
-    $form['social_syndication']['social_syndication_container'] = array(
-      '#type' => 'container',
-      '#parents' => array('social_syndication'),
-      '#states' => array(
-        'invisible' => array(
-          // If the checkbox is not enabled, show the container.
-          'input[name="social_syndication[tweet_post]"]' => array('checked' => FALSE),
+      // This container will be used to store the whole form for our custom
+      // settings. This way, showing/hidding the form using javascript is easier,
+      // as only one element should be set visible.
+      $form['social_syndication']['social_syndication_container'] = array(
+        '#type' => 'container',
+        '#parents' => array('social_syndication'),
+        '#states' => array(
+          'invisible' => array(
+            // If the checkbox is not enabled, show the container.
+            'input[name="social_syndication[tweet_post]"]' => array('checked' => FALSE),
+          ),
         ),
-      ),
-    );
-  }
+      );
+    }// end inner if
+  }//end outter if
 }
