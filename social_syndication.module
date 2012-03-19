@@ -86,7 +86,10 @@ function social_syndication_form_alter(&$form, $form_state, $form_id) {
   if (!empty($form['#node_edit_form']) && user_access('post content to social media')) {
     $nodetype = $form['#node']->type;
     $nodestopost = variable_get('ss_node_types');
+
+    //Make sure this node type has been chosen in settings
     if ($nodestopost[$nodetype] === $nodetype) {
+      //Add a tab  to hold all the social form elements
       $form['social_syndication'] = array(
       '#type' => 'fieldset',
       '#title' => t('Social Syndication'),

@@ -9,35 +9,16 @@
  */
 function twitter_syndication_install() {
   // Check to see if twitter username field exists.
-  $field = field_info_field('twitter_username');
+  $field = field_info_field('ss_twitter_username');
 
   // If the field does not exist then create it
   if ( empty($field) ) {
-    $field = array(
-      'field_name' => 'twitter_username',
-      'type' => 'text',
-      'entity_types' => array('user'),
-      'translatable' => TRUE,
-    );
-    $field = field_create_field($field);
+    _add_field_ss_twitter_username();
   }
-}
 
-/*
- * Enable Twitter syndication module
- */
-function twitter_syndication_enable() {
-  if (!field_info_instance('user', 'twitter_username', 'user')) {
-    $instance = array(
-      'field_name' => 'twitter_username',
-      'entity_type' => 'user',
-      'bundle' => 'user',
-      'label' => t('Twitter Username'),
-      'description' => t('Enter Twitter username for posting content'),
-      'required' => FALSE,
-    );
-
-    $instance = field_create_instance($instance);
+  $hashtag = field_info_field('ss_twitter_hashtag');
+  if ( empty($field) ) {
+    _add_field_ss_twitter_hashtag();
   }
 }
 
@@ -46,15 +27,67 @@ function twitter_syndication_enable() {
  */
 function twitter_syndication_uninstall() {
   watchdog('Twitter Syndication Module', 'Uninstalling module and deleting fields.');
-  $instance = field_info_instance('user', 'twitter_username', 'user');
-
+  $instance = field_info_instance('user', 'ss_twitter_username', 'user');
   if ($instance) {
     field_delete_instance($instance);
   }
-
-  $field = field_info_field('twitter_username');
-
+  $field = field_info_field('ss_twitter_username');
   if ($field) {
-    field_delete_field('twitter_username');
+    field_delete_field('ss_twitter_username');
+  }
+
+  $hashinstance = field_info_instance('node', 'ss_twitter_hashtag', 'node');
+  if ($hashinstance) {
+    field_delete_instance($hashinstance);
+  }
+  $hashfield = field_info_field('ss_twitter_hashtag');
+  if ($hashfield) {
+    field_delete_field('ss_twitter_hashtag');
+  }
+}
+
+function _add_field_ss_twitter_username() {
+  $field = array(
+      'field_name' => 'ss_twitter_username',
+      'type' => 'text',
+      'entity_types' => array('user'),
+      'translatable' => TRUE,
+    );
+
+  if (!field_info_instance('user', 'ss_twitter_username', 'user')) {
+    $instance = array(
+      'field_name' => 'ss_twitter_username',
+      'entity_type' => 'user',
+      'bundle' => 'user',
+      'label' => t('Twitter Username'),
+      'description' => t('Enter Twitter username for posting content'),
+      'required' => FALSE,
+    );
+
+    $field = field_create_field($field);
+    $instance = field_create_instance($instance);
+  }
+}
+
+function _add_field_ss_twitter_hashtag() {
+  $field = array(
+    'field_name' => 'ss_twitter_hashtag',
+    'type' => 'text_long',
+    'entity_types' => array('node'),
+    'translatable' => TRUE,
+  );
+
+  if (!field_info_instance('node', 'ss_twitter_hashtag', 'node')) {
+    $instance = array(
+      'field_name' => 'ss_twitter_hashtag',
+      'entity_type' => 'node',
+      'bundle' => 'node',
+      'label' => t('Twitter Hashtags'),
+      'description' => t('Enter hashtags to include in your twitter post, seperated by a comma'),
+      'required' => FALSE,
+    );
+
+    $field = field_create_field($field);
+    $instance = field_create_instance($instance);
   }
 }
