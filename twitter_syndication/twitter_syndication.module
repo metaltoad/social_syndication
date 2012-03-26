@@ -111,9 +111,9 @@ function twitter_syndication_form_alter(&$form, $form_state, $form_id) {
   if (!empty($form['#node_edit_form'])) {
     $nodetype = $form['#node']->type;
     $nodestotweet = variable_get('ss_node_types');
-    dpm($form, 'Form');
-    dpm($nodetype, 'Nodetype of form');
-    dpm($nodestotweet, 'Array of content types from settings');
+    // dpm($form, 'Form');
+    // dpm($nodetype, 'Nodetype of form');
+    // dpm($nodestotweet, 'Array of content types from settings');
 
     // The string of this textfield will be shown
     // as summary in the vertical tab.
