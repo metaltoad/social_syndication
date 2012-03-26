@@ -66,20 +66,18 @@ function twitter_admin_profile_form($form, &$form_state) {
  * Submit handler. Steps through the OAuth process for Twitter.
  */
 function twitter_admin_profile_form_submit($form, &$form_state) {
-  $url = 'https://api.twitter.com/oauth/request_token';
-  $params = array(
-    'oauth_callback' => url('admin/services/social_syndication/twitter', array('absolute' => TRUE)),
-  );
-  $consumer = new OAuthConsumer('Tp2ne3J67mIatPw4gVTRg', 'RmZ1y64J2dhysssO7PCeebDpaLQGuZfmv90kbwZzY', $params['oauth_callback']);
-  $token = new OAuthToken(NULL, NULL);
-  $request = OAuthRequest::from_consumer_and_token($consumer, $token, 'POST', $url, $params);
-  $request->sign_request(new OAuthSignatureMethod_HMAC_SHA1(), $consumer, $token);
-  $params = $request->get_parameters();
-  unset($params['oauth_request_token']);
-  $response = drupal_http_request($request->get_normalized_http_url(), array(), 'POST', $request->get_parameters());
-  dpm($response);
-  //dpm($_SERVER, 'Server');
-  dpm(array($request->get_normalized_http_url(), $request->get_parameters()));
+  $url = 'http://api.twitter.com/1/statuses/update.json';
+$params = array(
+  'status' => 'hello world',
+);
+
+$consumer = new OAuthConsumer('Tp2ne3J67mIatPw4gVTRg', 'RmZ1y64J2dhysssO7PCeebDpaLQGuZfmv90kbwZzY');
+$token = new OAuthToken('221541626-fiLCTkYUg5Lwz4l7O5O86I04iqKXUe8z0Gzmmk2Y', 'FlJ2z3RSATBTmVtSOjMpQq3m4W9KOdlUoav2q1oxOI');
+$request = OAuthRequest::from_consumer_and_token($consumer, $token, 'POST', $url, $params);
+$request->sign_request(new OAuthSignatureMethod_HMAC_SHA1(), $consumer, $token);
+$params = $request->get_parameters();
+$response = drupal_http_request($request->get_normalized_http_url(), array(), 'POST', $request->get_parameters());
+dpm($response);
 }
 
 /**

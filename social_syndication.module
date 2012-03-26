@@ -83,10 +83,10 @@ function social_syndication_permission() {
  * Add custom tab for setting up social posts
  */
 function social_syndication_form_alter(&$form, $form_state, $form_id) {
-  if (!empty($form['#node_edit_form']) && user_access('post content to social media')) {
+  if (!empty($form['#node_edit_form']) ) {
     $nodetype = $form['#node']->type;
     $nodestopost = variable_get('ss_node_types');
-
+    dpm($form, 'Form');
     //Make sure this node type has been chosen in settings
     if ($nodestopost[$nodetype] === $nodetype) {
       //Add a tab  to hold all the social form elements
