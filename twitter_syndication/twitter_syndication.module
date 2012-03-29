@@ -55,7 +55,7 @@ function twitter_syndication_node_presave($node) {
  * @return a bitly shortened url or short url using the shorten module
  */
 function twitter_syndication_format_tweet(&$replacements, $data, $options) {
-  if($replacements['[node:url]']) {
+  if ($replacements['[node:url]']) {
     $url_to_shorten = $replacements['[node:url]'] . '/'; //Bitly needs a trailing slash on all urls
     $short_url = twitter_syndication_shorten_url($url_to_shorten);
     $replacements['[node:url]'] = $short_url;
@@ -78,7 +78,8 @@ function twitter_syndication_shorten_url($url_to_shorten) {
     $short_url = shorten_url($url_to_shorten);
     dpm($short_url, "Short URL From Shorten");
     return $short_url;
-  } else {
+  }
+  else {
     $long_url = urlencode($url_to_shorten);
     $base_url = 'https://api-ssl.bitly.com/v3/shorten?';
     $login = variable_get('ss_bitly_login', '');
@@ -94,7 +95,7 @@ function twitter_syndication_shorten_url($url_to_shorten) {
           return $short_url;
         }
       }
-    }
+  }
 }
 
 /*
@@ -107,7 +108,7 @@ function _twitter_syndication_hashtag_title($prehashtitle) {
   $wordstohash = explode(',', $normalized);
   $wordstohashlower = array_map('strtolower', $wordstohash);
   $titlewithhashesarray = array();
-    foreach($prehashtitlearray as $word) {
+    foreach ($prehashtitlearray as $word) {
       if ( in_array(strtolower(trim($word)), $wordstohashlower) ) {
         $word = '#' . $word;
       }
