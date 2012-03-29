@@ -55,15 +55,11 @@ function twitter_syndication_node_presave($node) {
  * @return a bitly shortened url or short url using the shorten module
  */
 function twitter_syndication_format_tweet(&$replacements, $data, $options) {
-  //dpm($replacements, 'Replacements'); //the node title and node url
-  //dpm($data); the node reference
-  //First shorten the url
-  if ($replacements['[node:url]']) {
+  if($replacements['[node:url]']) {
     $url_to_shorten = $replacements['[node:url]'] . '/'; //Bitly needs a trailing slash on all urls
     $short_url = twitter_syndication_shorten_url($url_to_shorten);
     $replacements['[node:url]'] = $short_url;
   }
-
   //Let's see if the title has any words that should be changed to hashtags
   if ($replacements['[node:title]']) {
     $prehashtitle = $replacements['[node:title]'];
@@ -78,19 +74,25 @@ function twitter_syndication_format_tweet(&$replacements, $data, $options) {
  * @return the shortened node url
  */
 function twitter_syndication_shorten_url($url_to_shorten) {
-  $long_url = urlencode($url_to_shorten);
-  $base_url = 'https://api-ssl.bitly.com/v3/shorten?';
-  $login = variable_get('ss_bitly_login', '');
-  $apikey = variable_get('ss_bitly_key', '');
-  $format = 'json';
-    //build the string
-    if ($login && $apikey) {
-      $dest = $base_url . 'login=' . $login . '&apiKey=' . $apikey . '&longUrl=' . $long_url . '&format=' . $format;
-      $result = drupal_http_request($dest);
-      $contents = json_decode($result->data);
-      if ($contents->status_code == 200) {
-        $short_url = $contents->data->url;
-        return $short_url;
+  if (module_exists('shorten')) {
+    $short_url = shorten_url($url_to_shorten);
+    dpm($short_url, "Short URL From Shorten");
+    return $short_url;
+  } else {
+    $long_url = urlencode($url_to_shorten);
+    $base_url = 'https://api-ssl.bitly.com/v3/shorten?';
+    $login = variable_get('ss_bitly_login', '');
+    $apikey = variable_get('ss_bitly_key', '');
+    $format = 'json';
+      //build the string
+      if ($login && $apikey) {
+        $dest = $base_url . 'login=' . $login . '&apiKey=' . $apikey . '&longUrl=' . $long_url . '&format=' . $format;
+        $result = drupal_http_request($dest);
+        $contents = json_decode($result->data);
+        if ($contents->status_code == 200) {
+          $short_url = $contents->data->url;
+          return $short_url;
+        }
       }
     }
 }
