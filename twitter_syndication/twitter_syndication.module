@@ -61,7 +61,6 @@ function twitter_syndication_format_tweet(&$replacements, $data, $options) {
   if ($replacements['[node:url]']) {
     $url_to_shorten = $replacements['[node:url]'] . '/'; //Bitly needs a trailing slash on all urls
     $short_url = twitter_syndication_shorten_url($url_to_shorten);
-    dpm($short_url, 'Short URL');
     $replacements['[node:url]'] = $short_url;
   }
 
@@ -102,19 +101,19 @@ function twitter_syndication_shorten_url($url_to_shorten) {
  */
 function _twitter_syndication_hashtag_title($prehashtitle) {
   $prehashtitlearray = explode(' ', $prehashtitle);
-  $wordstohash = explode(', ', variable_get('ss_twitter_hashtags'));
+  $normalized = str_replace(' ', '', variable_get('ss_twitter_hashtags'));
+  $wordstohash = explode(',', $normalized);
+  $wordstohashlower = array_map('strtolower', $wordstohash);
   $titlewithhashesarray = array();
     foreach($prehashtitlearray as $word) {
-      if ( in_array(strtolower(trim($word)), array_map('strtolower', $wordstohash)) ); {
+      if ( in_array(strtolower(trim($word)), $wordstohashlower) ) {
         $word = '#' . $word;
       }
       $titlewithhashesarray[] = $word;
     }
   $titlewithhashes = implode(' ', $titlewithhashesarray);
 
-  dpm($prehashtitle, 'Prehashtitle');
-  dpm($wordstohash, 'Hash List');
-  dpm($titlewithhashes, 'Title with hashes');
+  return $titlewithhashes;
 }
 
 /*
