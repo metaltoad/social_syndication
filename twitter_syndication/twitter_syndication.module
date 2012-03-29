@@ -146,7 +146,7 @@ function twitter_syndication_form_alter(&$form, $form_state, $form_id) {
       '#resizable' => TRUE,
       '#rows' => 5,
       '#cols' => 40,
-      '#default_value' => t('New post: [node:title] [node:url] (@[node:author:twitter_username])'),
+      '#default_value' => t('New post: [node:title] [node:url] (@[node:author:ss_twitter_username])'),
     );
 
     // Just to prove I can put more form elements from a different module
