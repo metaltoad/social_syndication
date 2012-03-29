@@ -27,8 +27,9 @@ function twitter_syndication_node_presave($node) {
       $data = array(
         'node' => $node,
       );
-      $test = token_replace($pretweet, $data, array('callback' => 'twitter_syndication_shorten_url'));
+      $test = token_replace($pretweet, $data, array('callback' => 'twitter_syndication_format_tweet'));
     }
+
     $prehashtags = field_get_items('node', $node, 'field_tags');
     $hashtags = array();
       if ($prehashtags) {
@@ -51,12 +52,33 @@ function twitter_syndication_node_presave($node) {
 
 /*
  * Shorten the long url and return it to the tweet.
+ * @return a bitly shortened url or short url using the shorten module
  */
-function twitter_syndication_shorten_url(&$replacements, $data, $options) {
-  //First, let's shorten the url
+function twitter_syndication_format_tweet(&$replacements, $data, $options) {
+  //dpm($replacements, 'Replacements'); //the node title and node url
+  //dpm($data); the node reference
+  //First shorten the url
   if ($replacements['[node:url]']) {
     $url_to_shorten = $replacements['[node:url]'] . '/'; //Bitly needs a trailing slash on all urls
+    $short_url = twitter_syndication_shorten_url($url_to_shorten);
+    dpm($short_url, 'Short URL');
+    $replacements['[node:url]'] = $short_url;
   }
+
+  //Let's see if the title has any words that should be changed to hashtags
+  if ($replacements['[node:title]']) {
+    $prehashtitle = $replacements['[node:title]'];
+    $titlewithhashes = _twitter_syndication_hashtag_title($prehashtitle);
+    $replacements['[node:title]'] = $titlewithhashes;
+  }
+  return $replacements;
+}
+
+/*
+ * Shorten the url using bitly or shorten module
+ * @return the shortened node url
+ */
+function twitter_syndication_shorten_url($url_to_shorten) {
   $long_url = urlencode($url_to_shorten);
   $base_url = 'https://api-ssl.bitly.com/v3/shorten?';
   $login = variable_get('ss_bitly_login', '');
@@ -69,13 +91,16 @@ function twitter_syndication_shorten_url(&$replacements, $data, $options) {
       $contents = json_decode($result->data);
       if ($contents->status_code == 200) {
         $short_url = $contents->data->url;
-        $replacements['[node:url]'] = $short_url;
+        return $short_url;
       }
     }
-  //Let's see if the title has any words that should be changed to hashtags
-  if ($replacements['[node:title]']) {
-    $prehashtitle = $replacements['[node:title]'];
-  }
+}
+
+/*
+ * Add hashtags to the node title
+ * @return title with chosen words turned into twitter hashtags
+ */
+function _twitter_syndication_hashtag_title($prehashtitle) {
   $prehashtitlearray = explode(' ', $prehashtitle);
   $wordstohash = explode(', ', variable_get('ss_twitter_hashtags'));
   $titlewithhashesarray = array();
@@ -86,13 +111,12 @@ function twitter_syndication_shorten_url(&$replacements, $data, $options) {
       $titlewithhashesarray[] = $word;
     }
   $titlewithhashes = implode(' ', $titlewithhashesarray);
-  $replacements['[node:title]'] = $titlewithhashes;
-  //dpm($contents, 'From Bitly');
+
   dpm($prehashtitle, 'Prehashtitle');
   dpm($wordstohash, 'Hash List');
   dpm($titlewithhashes, 'Title with hashes');
-  return $replacements;
 }
+
 /*
  * Implements hook_help().
  */
@@ -111,9 +135,9 @@ function twitter_syndication_form_alter(&$form, $form_state, $form_id) {
   if (!empty($form['#node_edit_form'])) {
     $nodetype = $form['#node']->type;
     $nodestotweet = variable_get('ss_node_types');
-    dpm($form, 'Form');
-    dpm($nodetype, 'Nodetype of form');
-    dpm($nodestotweet, 'Array of content types from settings');
+    // dpm($form, 'Form');
+    // dpm($nodetype, 'Nodetype of form');
+    // dpm($nodestotweet, 'Array of content types from settings');
 
     // The string of this textfield will be shown
     // as summary in the vertical tab.
