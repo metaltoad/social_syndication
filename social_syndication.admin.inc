@@ -17,7 +17,7 @@ function social_syndication_admin_profile_form($form, &$form_state) {
   $form['site_profiles']['ss_twitter'] = array(
     '#type' => 'textfield',
     '#title' => t('Twitter username'),
-    '#default_value' => variable_get('ss_twitter', ''), //TODO make this a variable after checking if set
+    '#default_value' => variable_get('ss_twitter', ''),
     '#size' => 40,
     '#maxlength' =>  16,
   );
@@ -32,11 +32,25 @@ function social_syndication_admin_profile_form($form, &$form_state) {
   $form['site_profiles']['ss_node_types'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Node types'),
-    '#description' => t('Choose which post types you would like to enable social posting'),
+    '#description' => t('Choose which post types you would like to enable for social media posting'),
     '#options' => node_type_get_names(),
     '#default_value' => variable_get('ss_node_types', array('story' => 'story', 'blog' => 'blog')),
   );
-
+  $form['site_profiles']['ss_taxonomy_hashtags'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Taxonomy Hashtags'),
+    '#description' => t('Check if you want to add hashtags from a taxonomy field on your nodes'),
+    '#options' => array('Use taxonomy terms as Twitter hashtags'),
+  );
+  $form['site_profiles']['ss_taxonomy_hashtags']['ss_taxonomy_name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Taxonomy Name'),
+    '#description' => t('Enter the name of your Twitter taxonomy vocabulary'),
+    '#default_value' => variable_get('ss_taxonomy_name'),
+    '#size' => 40,
+    '#maxlength' => 100,
+    '#weight' => 20,
+  );
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Save'),
