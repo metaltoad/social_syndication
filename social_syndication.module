@@ -83,7 +83,7 @@ function social_syndication_permission() {
  * Add custom tab for setting up social posts
  */
 function social_syndication_form_alter(&$form, $form_state, $form_id) {
-  if (!empty($form['#node_edit_form']) ) {
+  if ( module_exists('twitter_syndication') && !empty($form['#node_edit_form']) ) {
     $nodetype = $form['#node']->type;
     $nodestopost = variable_get('ss_node_types');
 
