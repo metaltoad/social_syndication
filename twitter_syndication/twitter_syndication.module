@@ -19,6 +19,7 @@ function twitter_syndication_permission() {
  * Implements hook_node_presave().
  */
 function twitter_syndication_node_presave($node) {
+  dpm($node);
   if ($node->social_syndication['tweet_post']) {
     if ($node->social_syndication['twitter_message']) {
       $pretweet = $node->social_syndication['twitter_message'];
@@ -29,8 +30,10 @@ function twitter_syndication_node_presave($node) {
       );
       $test = token_replace($pretweet, $data, array('callback' => 'twitter_syndication_format_tweet'));
     }
-
-    $prehashtags = field_get_items('node', $node, 'field_tags');
+    //if ( !empty(variable_get('ss_taxonomy_name')) ) {
+      $hashtagfield = variable_get('ss_taxonomy_name');
+    //}
+    $prehashtags = field_get_items('node', $node, $hashtagfield);
     $hashtags = array();
       if ($prehashtags) {
         foreach ($prehashtags as $hashtag) {
@@ -45,8 +48,10 @@ function twitter_syndication_node_presave($node) {
     $tweet_length = strlen($tweet);
     if ($tweet_length > 140) {
       form_set_error('twitter_message', t('Your tweet is a bit too long. Try murdering the grammar and resubmitting.'));
+    } else {
+      send_tweet($tweet);
     }
-    dpm($tweet, 'Tweet');
+    //dpm($tweet, 'Tweet');
   }
 }
 
@@ -76,7 +81,6 @@ function twitter_syndication_format_tweet(&$replacements, $data, $options) {
 function twitter_syndication_shorten_url($url_to_shorten) {
   if (module_exists('shorten')) {
     $short_url = shorten_url($url_to_shorten);
-    dpm($short_url, "Short URL From Shorten");
     return $short_url;
   }
   else {
@@ -93,6 +97,9 @@ function twitter_syndication_shorten_url($url_to_shorten) {
         if ($contents->status_code == 200) {
           $short_url = $contents->data->url;
           return $short_url;
+        }
+        else {
+          return $url_to_shorten; //bitly was down or whatever so return the long url
         }
       }
   }
@@ -117,6 +124,25 @@ function _twitter_syndication_hashtag_title($prehashtitle) {
   $titlewithhashes = implode(' ', $titlewithhashesarray);
 
   return $titlewithhashes;
+}
+
+/*
+ * Send a tweet to Twitter
+ */
+function send_tweet($tweet) {
+  $url = 'http://api.twitter.com/1/statuses/update.json';
+  $params = array(
+    'status' => $tweet,
+  );
+
+  $consumer = new OAuthConsumer('Tp2ne3J67mIatPw4gVTRg', 'RmZ1y64J2dhysssO7PCeebDpaLQGuZfmv90kbwZzY');
+  $token = new OAuthToken('221541626-fiLCTkYUg5Lwz4l7O5O86I04iqKXUe8z0Gzmmk2Y', 'FlJ2z3RSATBTmVtSOjMpQq3m4W9KOdlUoav2q1oxOI');
+  $request = OAuthRequest::from_consumer_and_token($consumer, $token, 'POST', $url, $params);
+  $request->sign_request(new OAuthSignatureMethod_HMAC_SHA1(), $consumer, $token);
+  $response = drupal_http_request($request->get_normalized_http_url(),
+  array('method' => 'POST', 'data' => drupal_http_build_query($request->get_parameters())));
+  dpm($response, 'from twitter');
+  // if response is good, post a success message
 }
 
 /*
