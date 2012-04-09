@@ -131,18 +131,22 @@ function _twitter_syndication_hashtag_title($prehashtitle) {
  */
 function send_tweet($tweet) {
   $url = 'http://api.twitter.com/1/statuses/update.json';
+  $consumerkey = variable_get('ss_twitter_oauthconsumerkey');
+  $consumersecret = variable_get('ss_twitter_oauthconsumersecret');
+  $accesstoken = variable_get('ss_twitter_oauthaccesstoken');
+  $access_secret = variable_get('ss_twitter_oauthaccesstokensecret');
   $params = array(
     'status' => $tweet,
   );
 
-  $consumer = new OAuthConsumer('Tp2ne3J67mIatPw4gVTRg', 'RmZ1y64J2dhysssO7PCeebDpaLQGuZfmv90kbwZzY');
-  $token = new OAuthToken('221541626-fiLCTkYUg5Lwz4l7O5O86I04iqKXUe8z0Gzmmk2Y', 'FlJ2z3RSATBTmVtSOjMpQq3m4W9KOdlUoav2q1oxOI');
+  $consumer = new OAuthConsumer($consumerkey, $consumersecret);
+  $token = new OAuthToken($accesstoken, $access_secret);
   $request = OAuthRequest::from_consumer_and_token($consumer, $token, 'POST', $url, $params);
   $request->sign_request(new OAuthSignatureMethod_HMAC_SHA1(), $consumer, $token);
   $response = drupal_http_request($request->get_normalized_http_url(),
   array('method' => 'POST', 'data' => drupal_http_build_query($request->get_parameters())));
   dpm($response, 'from twitter');
-  // if response is good, post a success message
+  // TODO: if response is good, post a success message
 }
 
 /*

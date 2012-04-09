@@ -70,33 +70,43 @@ function twitter_admin_profile_form($form, &$form_state) {
   $form['setup'] = array(
     '#type' => 'fieldset',
     '#title' => t('Setup a Twitter account'),
-    '#description' => t('Submitting this form will redirect you to Twitter where you can login with the account that you would like to use to promote your content'),
+    '#description' => t("If you don't already have one, create an app for the Twitter account you want to use to broadcast your content at ") . l('dev.twitter.com', 'https://dev.twitter.com/apps/new') . t(' then enter your credentials here.'),
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
   );
+  $form['setup']['ss_twitter_oauthconsumerkey'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Oauth Consumer Key'),
+    '#default_value' => variable_get('ss_twitter_oauthconsumerkey', ''),
+    '#size' => 40,
+    '#maxlength' =>  100,
+  );
+  $form['setup']['ss_twitter_oauthconsumersecret'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Oauth Consumer Secret '),
+    '#default_value' => variable_get('ss_twitter_oauthconsumersecret', ''),
+    '#size' => 40,
+    '#maxlength' =>  100,
+  );
+  $form['setup']['ss_twitter_oauthaccesstoken'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Oauth Access Token'),
+    '#default_value' => variable_get('ss_twitter_oauthaccesstoken', ''),
+    '#size' => 40,
+    '#maxlength' =>  100,
+  );
+  $form['setup']['ss_twitter_oauthaccesstokensecret'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Oauth Access Token Secret'),
+    '#default_value' => variable_get('ss_twitter_oauthaccesstokensecret', ''),
+    '#size' => 40,
+    '#maxlength' =>  100,
+  );
   $form['submit'] = array(
     '#type' => 'submit',
-    '#value' => t('Authorize'),
+    '#value' => t('Save'),
   );
   return system_settings_form($form);
-}
-
-/*
- * Submit handler. Steps through the OAuth process for Twitter.
- */
-function twitter_admin_profile_form_submit($form, &$form_state) {
-  $url = 'http://api.twitter.com/1/statuses/update.json';
-$params = array(
-  'status' => 'hello world',
-);
-
-$consumer = new OAuthConsumer('Tp2ne3J67mIatPw4gVTRg', 'RmZ1y64J2dhysssO7PCeebDpaLQGuZfmv90kbwZzY');
-$token = new OAuthToken('221541626-fiLCTkYUg5Lwz4l7O5O86I04iqKXUe8z0Gzmmk2Y', 'FlJ2z3RSATBTmVtSOjMpQq3m4W9KOdlUoav2q1oxOI');
-$request = OAuthRequest::from_consumer_and_token($consumer, $token, 'POST', $url, $params);
-$request->sign_request(new OAuthSignatureMethod_HMAC_SHA1(), $consumer, $token);
-$params = $request->get_parameters();
-$response = drupal_http_request($request->get_normalized_http_url(), array(), 'POST', $request->get_parameters());
-dpm($response);
 }
 
 /**
