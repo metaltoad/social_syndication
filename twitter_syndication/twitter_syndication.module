@@ -19,7 +19,7 @@ function twitter_syndication_permission() {
  * Implements hook_node_presave().
  */
 function twitter_syndication_node_presave($node) {
-  dpm($node);
+  //dpm($node), 'Node';
   if ($node->social_syndication['tweet_post']) {
     if ($node->social_syndication['twitter_message']) {
       $pretweet = $node->social_syndication['twitter_message'];
