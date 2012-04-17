@@ -19,6 +19,7 @@ function twitter_syndication_permission() {
  * Implements hook_node_presave().
  */
 function twitter_syndication_node_presave($node) {
+  $edit_link = $node->nid . '/edit';
   if ($node->social_syndication['tweet_post']) {
     if ($node->social_syndication['twitter_message']) {
       $pretweet = $node->social_syndication['twitter_message'];
@@ -46,8 +47,9 @@ function twitter_syndication_node_presave($node) {
      $_SESSION['tweet'] = $tweet;
     $tweet_length = strlen($tweet);
     if ($tweet_length > 140) {
-      form_set_error('twitter_message', t('Your tweet is a bit too long. Try murdering the grammar and resubmitting.'));
-    } else {
+      form_set_error('twitter_message', t('Your tweet is a bit too long. Try murdering the grammar and <a href="!url">resubmitting</a>.', array('!url' => $edit_link)));
+    }
+    else {
       send_tweet($tweet);
     }
   }
@@ -92,11 +94,13 @@ function twitter_syndication_shorten_url($url_to_shorten) {
         $dest = $base_url . 'login=' . $login . '&apiKey=' . $apikey . '&longUrl=' . $long_url . '&format=' . $format;
         $result = drupal_http_request($dest);
         $contents = json_decode($result->data);
+        $status = $contents->status_txt;
         if ($contents->status_code == 200) {
           $short_url = $contents->data->url;
           return $short_url;
         }
         else {
+          drupal_set_message( t('There was a problem with Bitly url shortening: %msg', array('%msg' => $status)));
           return $url_to_shorten; //bitly was down or whatever so return the long url
         }
       }
@@ -144,10 +148,11 @@ function send_tweet($tweet) {
   $response = drupal_http_request($request->get_normalized_http_url(),
   array('method' => 'POST', 'data' => drupal_http_build_query($request->get_parameters())));
   if ($response->code == 200) {
-    drupal_set_message('Your tweet was sent: ' . $tweet, 'status');
-  } else {
+    drupal_set_message( t('Your tweet was sent: %tweet', array('%tweet' => $tweet)), 'status');
+  } 
+  else {
     $msg = $response->status_message;
-    drupal_set_message('There was a problem sending your tweet: ' . $response->status_message, 'error');
+    drupal_set_message( t('There was a problem sending your tweet: %msg', array('%msg' => $msg) ), 'error');
   }
 }
 
