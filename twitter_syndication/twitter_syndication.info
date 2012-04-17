@@ -3,11 +3,11 @@ description = Automatically send your content to Twitter when it is posted.
 core = 7.x
 package = Social Syndication
 
-files[] = twitter_syndication.admin.inc
-
 ;stylesheets[all][] = style.css
 ;scripts[] = somescript.js
 ;files[] = file
 
 dependencies[] = social_syndication
+
+configure = admin/config/services/social_syndication/twitter
 
