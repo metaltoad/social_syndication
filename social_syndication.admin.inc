@@ -70,7 +70,7 @@ function social_syndication_admin_profile_form($form, &$form_state) {
   );
   return system_settings_form($form);
 }
-
+t('<a href="!url">Click here</a> for more', array('!url' => url('more')));
 /**
  * Menu callback - admin form for Oauth Twitter settings.
  */
@@ -78,7 +78,7 @@ function twitter_admin_profile_form($form, &$form_state) {
   $form['setup'] = array(
     '#type' => 'fieldset',
     '#title' => t('Setup a Twitter account'),
-    '#description' => t("If you don't already have one, create an app for the Twitter account you want to use to broadcast your content at ") . l('dev.twitter.com', 'https://dev.twitter.com/apps/new') . t(' then enter your credentials here.'),
+    '#description' => t('If you don\'t already have one, create an app for the Twitter account you want to use to broadcast your content at <a href="!url">dev.twitter.com</a> then enter your credentials here.', array('!url' => url('http://dev.twitter.com'))),
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
   );
@@ -91,7 +91,7 @@ function twitter_admin_profile_form($form, &$form_state) {
   );
   $form['setup']['ss_twitter_oauthconsumersecret'] = array(
     '#type' => 'textfield',
-    '#title' => t('Oauth Consumer Secret '),
+    '#title' => t('Oauth Consumer Secret'),
     '#default_value' => variable_get('ss_twitter_oauthconsumersecret', ''),
     '#size' => 40,
     '#maxlength' =>  100,
