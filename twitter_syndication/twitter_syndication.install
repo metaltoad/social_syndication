@@ -30,15 +30,6 @@ function twitter_syndication_uninstall() {
   if ($field) {
     field_delete_field('ss_twitter_username');
   }
-
-  // $hashinstance = field_info_instance('node', 'ss_twitter_hashtag', 'node');
-  // if ($hashinstance) {
-  //   field_delete_instance($hashinstance);
-  // }
-  // $hashfield = field_info_field('ss_twitter_hashtag');
-  // if ($hashfield) {
-  //   field_delete_field('ss_twitter_hashtag');
-  // }
 }
 
 function _add_field_ss_twitter_username() {
