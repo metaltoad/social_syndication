@@ -15,11 +15,6 @@ function twitter_syndication_install() {
   if ( empty($field) ) {
     _add_field_ss_twitter_username();
   }
-
-  $hashtag = field_info_field('ss_twitter_hashtag');
-  if ( empty($field) ) {
-    _add_field_ss_twitter_hashtag();
-  }
 }
 
 /**
@@ -61,29 +56,6 @@ function _add_field_ss_twitter_username() {
       'bundle' => 'user',
       'label' => t('Twitter Username'),
       'description' => t('Enter Twitter username for posting content'),
-      'required' => FALSE,
-    );
-
-    $field = field_create_field($field);
-    $instance = field_create_instance($instance);
-  }
-}
-
-function _add_field_ss_twitter_hashtag() {
-  $field = array(
-    'field_name' => 'ss_twitter_hashtag',
-    'type' => 'text_long',
-    'entity_types' => array('node'),
-    'translatable' => TRUE,
-  );
-
-  if (!field_info_instance('node', 'ss_twitter_hashtag', 'node')) {
-    $instance = array(
-      'field_name' => 'ss_twitter_hashtag',
-      'entity_type' => 'node',
-      'bundle' => 'node',
-      'label' => t('Twitter Hashtags'),
-      'description' => t('Enter hashtags to include in your twitter post, seperated by a comma'),
       'required' => FALSE,
     );
 
