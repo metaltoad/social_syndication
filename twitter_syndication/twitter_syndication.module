@@ -19,7 +19,6 @@ function twitter_syndication_permission() {
  * Implements hook_node_presave().
  */
 function twitter_syndication_node_presave($node) {
-  //dpm($node), 'Node';
   if ($node->social_syndication['tweet_post']) {
     if ($node->social_syndication['twitter_message']) {
       $pretweet = $node->social_syndication['twitter_message'];
@@ -30,14 +29,14 @@ function twitter_syndication_node_presave($node) {
       );
       $test = token_replace($pretweet, $data, array('callback' => 'twitter_syndication_format_tweet'));
     }
-    //if ( !empty(variable_get('ss_taxonomy_name')) ) {
-      $hashtagfield = variable_get('ss_taxonomy_name');
-    //}
-    $prehashtags = field_get_items('node', $node, $hashtagfield);
-    $hashtags = array();
-      if ($prehashtags) {
-        foreach ($prehashtags as $hashtag) {
-        $hashtags[] = '#' . $hashtag['name'];
+    $hashtagfield = variable_get('ss_taxonomy_name');
+    if ( !empty($hashtagfield) ) {
+      $prehashtags = field_get_items('node', $node, $hashtagfield);
+      $hashtags = array();
+        if ($prehashtags) {
+          foreach ($prehashtags as $hashtag) {
+          $hashtags[] = '#' . $hashtag['name'];
+        }
       }
     }
     $tweet = $test;
@@ -51,7 +50,6 @@ function twitter_syndication_node_presave($node) {
     } else {
       send_tweet($tweet);
     }
-    //dpm($tweet, 'Tweet');
   }
 }
 
@@ -145,12 +143,11 @@ function send_tweet($tweet) {
   $request->sign_request(new OAuthSignatureMethod_HMAC_SHA1(), $consumer, $token);
   $response = drupal_http_request($request->get_normalized_http_url(),
   array('method' => 'POST', 'data' => drupal_http_build_query($request->get_parameters())));
-  dpm($response, 'from twitter');
   if ($response->code == 200) {
-    drupal_set_message('Your tweet was sent.', 'status');
+    drupal_set_message('Your tweet was sent: ' . $tweet, 'status');
   } else {
     $msg = $response->status_message;
-    drupal_set_message('There was a problem sending your tweet.', 'error');
+    drupal_set_message('There was a problem sending your tweet: ' . $response->status_message, 'error');
   }
 }
 
@@ -159,7 +156,6 @@ function send_tweet($tweet) {
  */
 function twitter_syndication_help($path, $arg) {
   $node = node_load($arg[1]);
-  //dpm($node, 'Node');
 }
 
 /*
@@ -172,9 +168,6 @@ function twitter_syndication_form_alter(&$form, $form_state, $form_id) {
   if (!empty($form['#node_edit_form'])) {
     $nodetype = $form['#node']->type;
     $nodestotweet = variable_get('ss_node_types');
-    // dpm($form, 'Form');
-    // dpm($nodetype, 'Nodetype of form');
-    // dpm($nodestotweet, 'Array of content types from settings');
 
     // The string of this textfield will be shown
     // as summary in the vertical tab.
@@ -184,14 +177,7 @@ function twitter_syndication_form_alter(&$form, $form_state, $form_id) {
       '#resizable' => TRUE,
       '#rows' => 5,
       '#cols' => 40,
-      '#default_value' => t('New post: [node:title] [node:url] (@[node:author:ss_twitter_username])'),
-    );
-
-    // Just to prove I can put more form elements from a different module
-    $form['social_syndication']['test_checkbox'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Another checkbox'),
-      '#default_value' => FALSE,
+      '#default_value' => variable_get('ss_tweet_format', 'New post: [node:title] [node:url]'),
     );
 
     $entities = entity_get_info();

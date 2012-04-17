@@ -42,6 +42,14 @@ function social_syndication_admin_profile_form($form, &$form_state) {
     '#default_value' => variable_get('ss_taxonomy_hashtags', 0),
     '#description' => t('Check if you want to add hashtags from a taxonomy field on your nodes'),
   );
+  $form['site_profiles']['ss_tweet_format'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Set the default format of your tweets'),
+    '#description' => t('If you have the Token module enabled, you maybe use Token references to set sensible defaults for outgoing tweets. Each message is totally customizable in the node edit form as well.'),
+    '#default_value' => variable_get('ss_tweet_format', 'New post: [node:title] [node:url] (@[node:author:ss_twitter_username])'),
+    '#size' => 80,
+    '#maxlength' => 100,
+  );
   $form['site_profiles']['ss_taxonomy_name'] = array(
     '#type' => 'textfield',
     '#title' => t('Taxonomy Name'),
@@ -55,14 +63,6 @@ function social_syndication_admin_profile_form($form, &$form_state) {
         ':input[name="ss_taxonomy_hashtags"]' => array('checked' => TRUE),
       ),
     ),
-  );
-  $form['site_profiles']['ss_tweet_format'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Set the default format of your tweets'),
-    '#description' => t('If you have the Token module enabled, you maybe use Token references to set sensible defaults for outgoing tweets. Each message is totally customizable in the node edit form as well.'),
-    '#default_value' => variable_get('ss_tweet_format', 'New post: [node:title] [node:url] (@[node:author:ss_twitter_username])'),
-    '#size' => 80,
-    '#maxlength' => 100,
   );
   $form['submit'] = array(
     '#type' => 'submit',
