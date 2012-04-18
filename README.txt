@@ -32,6 +32,8 @@ Social Syndication is* a suite of modules that allow you to automatically post y
 
   If you want to connect a Bitly account, you may enter your account name and API key at admin/config/services/social_syndication/bitly
 
+  If you want to be able to include the Twitter handle of the currently logged-in user with a Token, you can add their Twitter handle in the User edit form (admin/people).
+
   Configure posting options at admin/config/services/social_syndication
     Twitter username: the account which content to which content will be posted
 
