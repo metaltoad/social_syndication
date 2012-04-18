@@ -70,7 +70,7 @@ function social_syndication_admin_profile_form($form, &$form_state) {
   );
   return system_settings_form($form);
 }
-t('<a href="!url">Click here</a> for more', array('!url' => url('more')));
+
 /**
  * Menu callback - admin form for Oauth Twitter settings.
  */
