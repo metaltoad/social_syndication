@@ -36,12 +36,6 @@ function social_syndication_admin_profile_form($form, &$form_state) {
     '#options' => node_type_get_names(),
     '#default_value' => variable_get('ss_node_types', array('story' => 'story', 'blog' => 'blog')),
   );
-  $form['site_profiles']['ss_taxonomy_hashtags'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Taxonomy Hashtags'),
-    '#default_value' => variable_get('ss_taxonomy_hashtags', 0),
-    '#description' => t('Check if you want to add hashtags from a taxonomy field on your nodes'),
-  );
   $form['site_profiles']['ss_tweet_format'] = array(
     '#type' => 'textfield',
     '#title' => t('Set the default format of your tweets'),
@@ -49,6 +43,12 @@ function social_syndication_admin_profile_form($form, &$form_state) {
     '#default_value' => variable_get('ss_tweet_format', 'New post: [node:title] [node:url] (@[node:author:ss_twitter_username])'),
     '#size' => 80,
     '#maxlength' => 100,
+  );
+  $form['site_profiles']['ss_taxonomy_hashtags'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Taxonomy Hashtags'),
+    '#default_value' => variable_get('ss_taxonomy_hashtags', 0),
+    '#description' => t('Check if you want to add hashtags from a taxonomy field on your nodes'),
   );
   $form['site_profiles']['ss_taxonomy_name'] = array(
     '#type' => 'textfield',
